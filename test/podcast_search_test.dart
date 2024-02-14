@@ -29,6 +29,7 @@ void main() {
 
       final item = result.items.first;
       expect(item.guid, 'dc1403e1-07a2-512c-9e65-5a749f141ab9');
+      expect(item.collectionId, 1458519430);
     });
   });
 }
