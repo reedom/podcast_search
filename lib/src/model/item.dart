@@ -166,6 +166,7 @@ class Item {
     }
 
     return Item(
+      guid: json['podcastGuid'] as String?,
       artistName: json['author'] as String?,
       trackName: json['title'] as String?,
       feedUrl: json['url'] as String?,
