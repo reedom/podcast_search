@@ -166,6 +166,7 @@ class Item {
     }
 
     return Item(
+      collectionId: json['itunesId'] as int?,
       guid: json['podcastGuid'] as String?,
       artistName: json['author'] as String?,
       trackName: json['title'] as String?,
