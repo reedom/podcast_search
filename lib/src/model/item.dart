@@ -194,36 +194,19 @@ class Item {
 
   /// Contains a URL for the highest resolution artwork available. If no artwork is available
   /// this will return an empty [String].
-  String? get bestArtworkUrl {
-    if (artworkUrl != null) {
-      return artworkUrl;
-    } else if (artworkUrl600 != null) {
-      return artworkUrl600;
-    } else if (artworkUrl100 != null) {
-      return artworkUrl100;
-    } else if (artworkUrl60 != null) {
-      return artworkUrl60;
-    } else if (artworkUrl30 != null) {
-      return artworkUrl30;
-    }
-
-    return '';
+  String get bestArtworkUrl {
+    return artworkUrl ??
+        artworkUrl600 ??
+        artworkUrl100 ??
+        artworkUrl60 ??
+        artworkUrl30 ??
+        '';
   }
 
   /// Contains a URL for the thumbnail resolution artwork. If no thumbnail size artwork
   /// is available this could return a URL for the full size image. If no artwork is available
   /// this will return an empty [String].
-  String? get thumbnailArtworkUrl {
-    if (artworkUrl60 != null) {
-      return artworkUrl60;
-    } else if (artworkUrl100 != null) {
-      return artworkUrl100;
-    } else if (artworkUrl600 != null) {
-      return artworkUrl600;
-    } else if (artworkUrl != null) {
-      return artworkUrl;
-    }
-
-    return '';
+  String get thumbnailArtworkUrl {
+    return artworkUrl60 ?? artworkUrl100 ?? artworkUrl600 ?? artworkUrl ?? '';
   }
 }
