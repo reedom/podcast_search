@@ -252,6 +252,41 @@ class Item {
   String get thumbnailArtworkUrl {
     return artworkUrl60 ?? artworkUrl100 ?? artworkUrl600 ?? artworkUrl ?? '';
   }
+
+  Item copyWith({
+    String? feedUrl,
+    String? summary,
+  }) {
+    return Item(
+      artistId: artistId,
+      collectionId: collectionId,
+      trackId: trackId,
+      guid: guid,
+      artistName: artistName,
+      collectionName: collectionName,
+      trackName: trackName,
+      trackCount: trackCount,
+      collectionCensoredName: collectionCensoredName,
+      trackCensoredName: trackCensoredName,
+      artistViewUrl: artistViewUrl,
+      collectionViewUrl: collectionViewUrl,
+      feedUrl: feedUrl ?? this.feedUrl,
+      trackViewUrl: trackViewUrl,
+      collectionExplicitness: collectionExplicitness,
+      trackExplicitness: trackExplicitness,
+      artworkUrl30: artworkUrl30,
+      artworkUrl60: artworkUrl60,
+      artworkUrl100: artworkUrl100,
+      artworkUrl600: artworkUrl600,
+      artworkUrl: artworkUrl,
+      releaseDate: releaseDate,
+      country: country,
+      primaryGenreName: primaryGenreName,
+      contentAdvisoryRating: contentAdvisoryRating,
+      genre: genre,
+      summary: summary ?? this.summary,
+    );
+  }
 }
 
 String? _getStringEntry(Map<String, dynamic> json, List<String> keys) {
