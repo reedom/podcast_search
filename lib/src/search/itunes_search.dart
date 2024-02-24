@@ -160,45 +160,13 @@ final class ITunesSearch extends BaseSearch {
   @override
   List<String> genres() => _genres.keys.toList(growable: false);
 
-  /// The charts data returned does not contain everything we need to present
-  /// to the client. For each entry, we call the main API to get the full
-  /// details for each podcast.
   Future<SearchResult> _chartsToResults(dynamic jsonInput) async {
-    var entries = jsonInput['feed']['entry'];
-
-    var items = <Item>[];
-
-    try {
-      if (entries != null) {
-        for (var entry in entries) {
-          var id = entry['id']['attributes']['im:id'];
-          var title = entry['title']['label'];
-
-          final response = await _client.get('$feedApiEndpoint/lookup?id=$id');
-          final results = json.decode(response.data);
-          final count = results['resultCount'] as int;
-
-          if (count == 0) {
-            // ignore: avoid_print
-            print(
-                'Warning: Could not find $title via lookup id: $feedApiEndpoint/lookup?id=$id - skipped');
-          }
-
-          if (count > 0 && results['results'] != null) {
-            var item = Item.fromJson(json: results['results'][0]);
-
-            items.add(item);
-          }
-        }
-      }
-
-      return SearchResult(resultCount: items.length, items: items);
-    } on DioException catch (e) {
-      setLastError(e);
-    }
-
-    return SearchResult.fromError(
-        lastError: lastError ?? '', lastErrorType: lastErrorType);
+    var entries = jsonInput['feed']['entry'] as List<dynamic>?;
+    final items = entries
+            ?.map((entry) => Item.fromItunesSearchResult(json: entry))
+            .toList() ??
+        [];
+    return SearchResult(resultCount: items.length, items: items);
   }
 
   /// This internal method constructs a correctly encoded URL which is then
