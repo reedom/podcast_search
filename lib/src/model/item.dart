@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Ben Hills and the project contributors. Use of this source
 // code is governed by a MIT license that can be found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:podcast_search/podcast_search.dart';
 
 /// A class that represents an individual Podcast within the search results. Not all
@@ -83,6 +84,9 @@ class Item {
   /// Full list of genres for the podcast.
   final List<Genre>? genre;
 
+  /// Summary of the podcast.
+  final String? summary;
+
   Item({
     this.artistId,
     this.collectionId,
@@ -110,6 +114,7 @@ class Item {
     this.primaryGenreName,
     this.contentAdvisoryRating,
     this.genre,
+    this.summary,
   });
 
   /// Takes our json map and builds a Podcast instance from it.
@@ -119,6 +124,44 @@ class Item {
     return type == ResultType.itunes
         ? _fromItunes(json!)
         : _fromPodcastIndex(json!);
+  }
+
+  factory Item.fromItunesSearchResult({required Map<String, dynamic> json}) {
+    final images = <(int, String)>[];
+    if (json.containsKey('im:image')) {
+      for (final e in json['im:image'] as List<dynamic>) {
+        final url = _getStringEntry(e, ['label']);
+        final size = _getIntEntry(e, ['attributes', 'height']);
+        if (url != null && size != null) {
+          images.add((size, url));
+        }
+      }
+    }
+    images.sort((a, b) => b.$1 - a.$1);
+
+    return Item(
+      collectionId: _getIntEntry(json, ['id', 'attributes', 'im:id']),
+      artistName: _getStringEntry(json, ['im:artist', 'label']),
+      collectionName: _getStringEntry(json, ['im:name', 'label']),
+      trackName: _getStringEntry(json, ['title', 'label']),
+      collectionViewUrl: _getStringEntry(json, ['link', 'attributes', 'href']),
+      trackViewUrl: _getStringEntry(json, ['link', 'attributes', 'href']),
+      artworkUrl30: images.lastWhereOrNull((e) => 30 <= e.$1)?.$2,
+      artworkUrl60: images.lastWhereOrNull((e) => 60 <= e.$1)?.$2,
+      artworkUrl100: images.lastWhereOrNull((e) => 100 <= e.$1)?.$2,
+      artworkUrl600: images.lastWhereOrNull((e) => 450 <= e.$1)?.$2,
+      genre: Item._loadGenres([
+        _getStringEntry(json, ['category', 'attributes', 'im:id'])!
+      ], [
+        _getStringEntry(json, ['category', 'attributes', 'label'])!
+      ]),
+      releaseDate:
+          DateTime.parse(_getStringEntry(json, ['im:releaseDate', 'label'])!),
+      // country: json['country'] as String?,
+      // primaryGenreName: json['primaryGenreName'] as String?,
+      // contentAdvisoryRating: json['contentAdvisoryRating'] as String?,
+      summary: _getStringEntry(json, ['summary', 'label']),
+    );
   }
 
   static Item _fromItunes(Map<String, dynamic> json) {
@@ -209,4 +252,22 @@ class Item {
   String get thumbnailArtworkUrl {
     return artworkUrl60 ?? artworkUrl100 ?? artworkUrl600 ?? artworkUrl ?? '';
   }
+}
+
+String? _getStringEntry(Map<String, dynamic> json, List<String> keys) {
+  if (json.containsKey(keys[0])) {
+    return keys.length == 1
+        ? json[keys[0]] as String?
+        : _getStringEntry(json[keys[0]], keys.sublist(1));
+  }
+  return null;
+}
+
+int? _getIntEntry(Map<String, dynamic> json, List<String> keys) {
+  if (json.containsKey(keys[0])) {
+    return keys.length == 1
+        ? int.tryParse(json[keys[0]])
+        : _getIntEntry(json[keys[0]], keys.sublist(1));
+  }
+  return null;
 }
