@@ -30,6 +30,8 @@ abstract class BaseSearch {
     String genre,
   });
 
+  Future<Item?> lookup({required int collectionId});
+
   List<String> genres();
 
   /// If an error occurs during an HTTP GET request this method is called to

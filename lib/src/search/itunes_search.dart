@@ -158,6 +158,21 @@ final class ITunesSearch extends BaseSearch {
   }
 
   @override
+  Future<Item?> lookup({required int collectionId}) async {
+    try {
+      final response =
+          await _client.get('$feedApiEndpoint/lookup?id=$collectionId');
+      final results = json.decode(response.data);
+      final count = results['resultCount'] as int;
+
+      return count == 0 ? null : Item.fromJson(json: results['results'][0]);
+    } on DioException catch (e) {
+      setLastError(e);
+    }
+    return null;
+  }
+
+  @override
   List<String> genres() => _genres.keys.toList(growable: false);
 
   Future<SearchResult> _chartsToResults(dynamic jsonInput) async {

@@ -274,6 +274,10 @@ final class PodcastIndexSearch extends BaseSearch {
   }
 
   @override
+  Future<Item?> lookup({required int collectionId}) =>
+      throw UnimplementedError();
+
+  @override
   List<String> genres() => _genres;
 
   /// This internal method constructs a correctly encoded URL which is then

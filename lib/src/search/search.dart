@@ -138,6 +138,13 @@ class Search {
     );
   }
 
+  Future<Item?> lookup({required int collectionId}) async {
+    return ITunesSearch(
+      userAgent: userAgent,
+      timeout: timeout,
+    ).lookup(collectionId: collectionId);
+  }
+
   List<String> genres() {
     if (searchProvider is PodcastIndexProvider) {
       return PodcastIndexSearch(
